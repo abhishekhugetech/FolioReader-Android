@@ -145,33 +145,33 @@ public class FolioReader {
                 new IntentFilter(ACTION_MAGTAPP_MODE));
     }
 
-    public FolioReader openBook(String assetOrSdcardPath) {
-        Intent intent = getIntentFromUrl(assetOrSdcardPath, 0);
+    public FolioReader openBook(String assetOrSdcardPath, boolean isBookmarked) {
+        Intent intent = getIntentFromUrl(assetOrSdcardPath, 0,isBookmarked);
         context.startActivity(intent);
         return singleton;
     }
 
     public FolioReader openBook(int rawId) {
-        Intent intent = getIntentFromUrl(null, rawId);
+        Intent intent = getIntentFromUrl(null, rawId, false);
         context.startActivity(intent);
         return singleton;
     }
 
     public FolioReader openBook(String assetOrSdcardPath, String bookId) {
-        Intent intent = getIntentFromUrl(assetOrSdcardPath, 0);
+        Intent intent = getIntentFromUrl(assetOrSdcardPath, 0, false);
         intent.putExtra(EXTRA_BOOK_ID, bookId);
         context.startActivity(intent);
         return singleton;
     }
 
     public FolioReader openBook(int rawId, String bookId) {
-        Intent intent = getIntentFromUrl(null, rawId);
+        Intent intent = getIntentFromUrl(null, rawId, false);
         intent.putExtra(EXTRA_BOOK_ID, bookId);
         context.startActivity(intent);
         return singleton;
     }
 
-    private Intent getIntentFromUrl(String assetOrSdcardPath, int rawId) {
+    private Intent getIntentFromUrl(String assetOrSdcardPath, int rawId, boolean isBookmarked) {
 
         Intent intent = new Intent(context, FolioActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -179,6 +179,8 @@ public class FolioReader {
         intent.putExtra(Config.EXTRA_OVERRIDE_CONFIG, overrideConfig);
         intent.putExtra(EXTRA_PORT_NUMBER, portNumber);
         intent.putExtra(FolioActivity.EXTRA_READ_LOCATOR, (Parcelable) readLocator);
+
+        intent.putExtra(FolioActivity.INTENT_DOC_IS_BOOKMARKED, isBookmarked);
 
         if (rawId != 0) {
             intent.putExtra(FolioActivity.INTENT_EPUB_SOURCE_PATH, rawId);

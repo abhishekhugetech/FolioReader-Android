@@ -96,6 +96,7 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     private var mBookId: String? = null
     private var mEpubFilePath: String? = null
+    private var isBookMarked: Boolean = false
     private var mEpubSourceType: EpubSourceType? = null
     private var mEpubRawId = 0
     private var mediaControllerFragment: MediaControllerFragment? = null
@@ -118,6 +119,9 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         @JvmField
         val LOG_TAG: String = FolioActivity::class.java.simpleName
 
+        const val REQUEST_BOOKMARK = 4961
+
+        const val INTENT_DOC_IS_BOOKMARKED = "com.folioreader.doc_is_bookmarked"
         const val INTENT_EPUB_SOURCE_PATH = "com.folioreader.epub_asset_path"
         const val INTENT_EPUB_SOURCE_TYPE = "epub_source_type"
         const val EXTRA_READ_LOCATOR = "com.folioreader.extra.READ_LOCATOR"
@@ -276,6 +280,11 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
                 .getString(FolioActivity.INTENT_EPUB_SOURCE_PATH)
         }
 
+        if (intent.hasExtra(INTENT_DOC_IS_BOOKMARKED)){
+            isBookMarked = intent.getBooleanExtra(INTENT_DOC_IS_BOOKMARKED,false)
+        }
+        Log.e("jigar_folioActivity","isBookMarked : "+isBookMarked)
+
         initActionBar()
         initMediaController()
 
@@ -359,16 +368,36 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         menuInflater.inflate(R.menu.menu_main, menu)
 
         val config = AppUtil.getSavedConfig(applicationContext)!!
+        UiUtil.setColorIntToDrawable(config.themeColor, menu.findItem(R.id.itemSavedDocument).icon)
         UiUtil.setColorIntToDrawable(config.themeColor, menu.findItem(R.id.itemSearch).icon)
         UiUtil.setColorIntToDrawable(config.themeColor, menu.findItem(R.id.itemConfig).icon)
         UiUtil.setColorIntToDrawable(config.themeColor, menu.findItem(R.id.itemTts).icon)
 
+        refreshMenuIcons()
         if (!config.isShowTts)
             menu.findItem(R.id.itemTts).isVisible = false
 
         return true
     }
-
+    private fun refreshMenuIcons() {
+        Log.e("jigar_folioActivity","refreshMenuIcons : "+isBookMarked)
+        val menu = toolbar?.menu
+        if (menu!=null){
+            if (isBookMarked){
+                Handler().postDelayed({
+                    menu.findItem(R.id.itemSavedDocument)?.setIcon(R.drawable.ic_heart_white_full)
+                    val config = AppUtil.getSavedConfig(applicationContext)!!
+                    UiUtil.setColorIntToDrawable(config.themeColor, menu.findItem(R.id.itemSavedDocument).icon)
+                },300)
+            }else{
+                Handler().postDelayed({
+                    menu.findItem(R.id.itemSavedDocument)?.setIcon(R.drawable.ic_heart_white)
+                    val config = AppUtil.getSavedConfig(applicationContext)!!
+                    UiUtil.setColorIntToDrawable(config.themeColor, menu.findItem(R.id.itemSavedDocument).icon)
+                },300)
+            }
+        }
+    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         //Log.d(LOG_TAG, "-> onOptionsItemSelected -> " + item.getItemId());
 
@@ -379,6 +408,16 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
             startContentHighlightActivity()
             return true
 
+        } else if (itemId == R.id.itemSavedDocument) {
+            Log.v(LOG_TAG, "-> onOptionsItemSelected -> " + item.title)
+            try {
+                startActivityForResult(Intent(this, Class.forName("com.olm.magtapp.ui.dashboard.mag_docs.EpubReaderSaveBookMarkActivity")).apply {
+                    putExtra("isBookmarked", isBookMarked)
+                    putExtra("filepath", mEpubFilePath)
+                },REQUEST_BOOKMARK)
+            }catch (e: ClassNotFoundException){
+                e.printStackTrace()
+            }
         } else if (itemId == R.id.itemSearch) {
             Log.v(LOG_TAG, "-> onOptionsItemSelected -> " + item.title)
             if (searchUri == null)
@@ -782,8 +821,13 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-        if (requestCode == RequestCode.SEARCH.value) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.e("jigar_FolioActivity","onActivityResult : "+requestCode+"=="+resultCode)
+        if (requestCode == REQUEST_BOOKMARK && resultCode == RESULT_OK) {
+            isBookMarked = data?.getBooleanExtra("isBookmarked",isBookMarked) == true
+            Log.e("jigar_FolioActivity","isBookMarked : "+isBookMarked)
+            refreshMenuIcons()
+        } else if (requestCode == RequestCode.SEARCH.value) {
             Log.v(LOG_TAG, "-> onActivityResult -> " + RequestCode.SEARCH)
 
             if (resultCode == Activity.RESULT_CANCELED)
