@@ -283,8 +283,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         if (intent.hasExtra(INTENT_DOC_IS_BOOKMARKED)){
             isBookMarked = intent.getBooleanExtra(INTENT_DOC_IS_BOOKMARKED,false)
         }
-        Log.e("jigar_folioActivity","isBookMarked : "+isBookMarked)
-
         initActionBar()
         initMediaController()
 
@@ -380,7 +378,6 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         return true
     }
     private fun refreshMenuIcons() {
-        Log.e("jigar_folioActivity","refreshMenuIcons : "+isBookMarked)
         val menu = toolbar?.menu
         if (menu!=null){
             if (isBookMarked){
@@ -822,10 +819,8 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.e("jigar_FolioActivity","onActivityResult : "+requestCode+"=="+resultCode)
         if (requestCode == REQUEST_BOOKMARK && resultCode == RESULT_OK) {
             isBookMarked = data?.getBooleanExtra("isBookmarked",isBookMarked) == true
-            Log.e("jigar_FolioActivity","isBookMarked : "+isBookMarked)
             refreshMenuIcons()
         } else if (requestCode == RequestCode.SEARCH.value) {
             Log.v(LOG_TAG, "-> onActivityResult -> " + RequestCode.SEARCH)
