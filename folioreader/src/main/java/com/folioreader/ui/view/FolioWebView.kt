@@ -335,6 +335,7 @@ class FolioWebView : WebView {
 //            }
             else -> {
                 try {
+                    clearBrowserSelection()
                     context.startActivity(Intent(context, Class.forName("com.olm.magtapp.ui.new_dashboard.meaning_sreen.TheMeaningActivity")).apply {
                         putExtra("arg_word_meaning_activity", selectedText)
                         putExtra("arg_save_tapp_meaning_activity", true )
@@ -821,6 +822,7 @@ class FolioWebView : WebView {
                                 Log.v(LOG_TAG, "-> onTextSelectionItemClicked Magtapp On -> showTextSelectionPopup -> $word")
                                 if (word.isBlank()) return@evaluateJavascript
                                 try {
+                                    clearBrowserSelection()
                                     context.startActivity(Intent(context, Class.forName("com.olm.magtapp.ui.new_dashboard.meaning_sreen.TheMeaningActivity")).apply {
                                         putExtra("arg_word_meaning_activity", word)
                                         putExtra("arg_save_tapp_meaning_activity", true )
@@ -847,7 +849,10 @@ class FolioWebView : WebView {
         if (!destroyed)
             uiHandler.postDelayed(isScrollingRunnable, IS_SCROLLING_CHECK_TIMER.toLong())
     }
-
+    private fun clearBrowserSelection() {
+        val js = "window.getSelection().empty();window.getSelection().removeAllRanges();"
+        loadUrl("javascript: $js")
+    }
     fun getOnlyString(word:String):String{
         val pattern = Pattern.compile("[^a-z A-Z]")
         val matcher = pattern.matcher(word)
