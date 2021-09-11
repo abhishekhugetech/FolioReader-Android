@@ -334,6 +334,7 @@ class FolioWebView : WebView {
 //                uiHandler.post { showDictDialog(selectedText) }
 //            }
             else -> {
+                clearBrowserSelection()
                 try {
                     context.startActivity(Intent(context, Class.forName("com.olm.magtapp.ui.new_dashboard.meaning_sreen.TheMeaningActivity")).apply {
                         putExtra("arg_word_meaning_activity", selectedText)
@@ -820,6 +821,7 @@ class FolioWebView : WebView {
                                 word = word.split("\\s")[0]
                                 Log.v(LOG_TAG, "-> onTextSelectionItemClicked Magtapp On -> showTextSelectionPopup -> $word")
                                 if (word.isBlank()) return@evaluateJavascript
+                                clearBrowserSelection()
                                 try {
                                     context.startActivity(Intent(context, Class.forName("com.olm.magtapp.ui.new_dashboard.meaning_sreen.TheMeaningActivity")).apply {
                                         putExtra("arg_word_meaning_activity", word)
@@ -846,6 +848,11 @@ class FolioWebView : WebView {
         isScrollingCheckDuration = 0
         if (!destroyed)
             uiHandler.postDelayed(isScrollingRunnable, IS_SCROLLING_CHECK_TIMER.toLong())
+    }
+    private fun clearBrowserSelection() {
+        val js = "window.getSelection().empty();window.getSelection().removeAllRanges();"
+        uiHandler.post { loadUrl("javascript:$js") }
+
     }
     fun getOnlyString(word:String):String{
         val pattern = Pattern.compile("[^a-z A-Z]")
