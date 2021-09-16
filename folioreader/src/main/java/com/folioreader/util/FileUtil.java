@@ -81,7 +81,7 @@ public class FileUtil {
             int fileMaxIndex = epubFileName.length();
             epubFileName = epubFileName.substring(0, fileMaxIndex - 5);
         }
-
+        epubFileName = epubFileName.replaceAll("[^a-zA-Z0-9]", "");
         return epubFileName;
     }
 
