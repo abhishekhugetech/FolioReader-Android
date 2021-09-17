@@ -500,11 +500,13 @@ class FolioWebView : WebView {
             Log.d(LOG_TAG, "-> onPrepareActionMode")
 
             evaluateJavascript("javascript:getSelectionRect()") { value ->
-                val rectJson = JSONObject(value)
-                setSelectionRect(
-                    rectJson.getInt("left"), rectJson.getInt("top"),
-                    rectJson.getInt("right"), rectJson.getInt("bottom")
-                )
+                if (!value.isNullOrEmpty() && value != "null"){
+                    val rectJson = JSONObject(value)
+                    setSelectionRect(
+                        rectJson.getInt("left"), rectJson.getInt("top"),
+                        rectJson.getInt("right"), rectJson.getInt("bottom")
+                    )
+                }
             }
             return false
         }
@@ -548,11 +550,13 @@ class FolioWebView : WebView {
             Log.d(LOG_TAG, "-> onGetContentRect")
 
             evaluateJavascript("javascript:getSelectionRect()") { value ->
-                val rectJson = JSONObject(value)
-                setSelectionRect(
-                    rectJson.getInt("left"), rectJson.getInt("top"),
-                    rectJson.getInt("right"), rectJson.getInt("bottom")
-                )
+                if (!value.isNullOrEmpty() && value != "null"){
+                    val rectJson = JSONObject(value)
+                    setSelectionRect(
+                        rectJson.getInt("left"), rectJson.getInt("top"),
+                        rectJson.getInt("right"), rectJson.getInt("bottom")
+                    )
+                }
             }
         }
     }
