@@ -545,20 +545,16 @@ class FolioActivity : AppCompatActivity(), FolioActivityCallback, MediaControlle
         title = publication.metadata.title
 
         if (mBookId == null) {
-//            if (!publication.metadata.identifier.isEmpty()) {
-//                mBookId = publication.metadata.identifier
-//            } else {
-//                if (!publication.metadata.title.isEmpty()) {
-//                    mBookId = publication.metadata.title.hashCode().toString()
-//                } else {
-//                    mBookId = bookFileName!!.hashCode().toString()
-//                }
-//            }
-            if (mEpubFilePath.isNullOrEmpty()){
-                mBookId = UUIDType.nameUUIDFromNamespaceAndString(UUIDType.NAMESPACE, bookFileName.toString()).toString()
-            }else{
-                mBookId = UUIDType.nameUUIDFromNamespaceAndString(UUIDType.NAMESPACE, mEpubFilePath.toString()).toString()
+            val name = if (!mEpubFilePath.isNullOrEmpty()){
+                mEpubFilePath.toString()
+            } else if (publication.metadata.identifier.isNotEmpty()) {
+                publication.metadata.identifier
+            } else if (publication.metadata.title.isNotEmpty()) {
+                publication.metadata.title
+            } else {
+                bookFileName!!.toString()
             }
+            mBookId = UUIDType.nameUUIDFromNamespaceAndString(UUIDType.NAMESPACE, name).toString()
         }
 
         // searchUri currently not in use as it's uri is constructed through Retrofit,
