@@ -7,6 +7,7 @@ import android.Manifest;
  */
 public class Constants {
     public static final String PUBLICATION = "PUBLICATION";
+    public static final String UUID_EPUB_FILEPATH = "d7594f74-2039-11ec-9621-0242ac130002";
     public static final String SELECTED_CHAPTER_POSITION = "selected_chapter_position";
     public static final String TYPE = "type";
     public static final String CHAPTER_SELECTED = "chapter_selected";
