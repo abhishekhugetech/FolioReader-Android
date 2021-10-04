@@ -15,6 +15,7 @@
  */
 package com.folioreader.android.sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +42,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.folioreader.FolioReader.REQ_CODE_FOLIO_READER;
 
 public class HomeActivity extends AppCompatActivity
         implements OnHighlightListener, ReadLocatorListener, FolioReader.OnClosedListener,TextSelectionInterface {
@@ -88,7 +91,7 @@ public class HomeActivity extends AppCompatActivity
 
                 folioReader.setReadLocator(readLocator);
                 folioReader.setConfig(config, true)
-                        .openBook("file:///android_asset/TheSilverChair.epub",false);
+                        .openBook(HomeActivity.this,"file:///android_asset/TheSilverChair.epub",false,2);
             }
         });
     }
@@ -187,5 +190,15 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onTextSelectionClicked(@NotNull String text) {
         Toast.makeText(this,"actvity "+text,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CODE_FOLIO_READER && resultCode == RESULT_OK){
+            boolean isAnnotationChange = data.getBooleanExtra("isAnnotationChange",false);
+            boolean isPageChange = data.getBooleanExtra("isPageChange",false);
+            int currentPage = data.getIntExtra("currentPage",0);
+        }
     }
 }
